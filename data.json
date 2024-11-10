@@ -6,6 +6,7 @@
         "cuisine": "Italiaans",
         "country": "Italy",
         "flag": "https://flagcdn.com/w20/it.png"
+        "google_maps_url": "https://www.google.com/maps/place/restaurant+1"
     },
     {
         "name": "Thais Restaurant",
@@ -14,6 +15,7 @@
         "cuisine": "Thais",
         "country": "Thailand",
         "flag": "https://flagcdn.com/w20/th.png"
+        "google_maps_url": "https://www.google.com/maps/place/restaurant+2"
     },
     {
         "name": "Mexicaans Restaurant",
@@ -22,5 +24,6 @@
         "cuisine": "Mexicaans",
         "country": "Mexico",
         "flag": "https://flagcdn.com/w20/mx.png"
+        "google_maps_url": "https://www.google.com/maps/place/restaurant+3"
     }
 ]
