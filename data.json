@@ -1,21 +1,26 @@
 [
-  {
-    "name": "Restaurant 1",
-    "country": "Nederland",
-    "lat": 52.370216,
-    "lng": 4.895168,
-    "cuisine": "Nederlands",
-    "flag": "https://flagcdn.com/w20/th.png",
-    "google_maps_link": "https://www.google.com/maps/place/restaurant+1"
-  },
-  {
-    "name": "Restaurant 2",
-    "country": "Italië",
-    "lat": 41.902782,
-    "lng": 12.496366,
-    "cuisine": "Italiaans",
-    "flag": "https://flagcdn.com/w20/it.png",
-    "google_maps_link": "https://www.google.com/maps/place/restaurant+2"
-  }
-  // Voeg meer restaurants toe...
+    {
+        "name": "Italiaans Restaurant",
+        "lat": 52.370216,
+        "lng": 4.895168,
+        "cuisine": "Italiaans",
+        "country": "Italy",
+        "flag": "https://flagcdn.com/w20/it.png"
+    },
+    {
+        "name": "Thais Restaurant",
+        "lat": 52.367984,
+        "lng": 4.903561,
+        "cuisine": "Thais",
+        "country": "Thailand",
+        "flag": "https://flagcdn.com/w20/th.png"
+    },
+    {
+        "name": "Mexicaans Restaurant",
+        "lat": 52.359998,
+        "lng": 4.881999,
+        "cuisine": "Mexicaans",
+        "country": "Mexico",
+        "flag": "https://flagcdn.com/w20/mx.png"
+    }
 ]
