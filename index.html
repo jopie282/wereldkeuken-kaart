@@ -3,114 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Selector</title>
+    <title>Wereldkeuken Kaart van Nederland</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
         #sidebar {
-            width: 200px;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #f4f4f4;
+            width: 250px;
             padding: 20px;
-            overflow-y: auto;
+            border-right: 1px solid #ccc;
         }
         #map {
-            margin-left: 220px;
-            height: 100vh;
+            height: 600px;
+            flex-grow: 1;
+            margin: 20px 0;
         }
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+        .country-option {
+            cursor: pointer;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .country-option img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
+    <div id="sidebar">
+        <h2>Selecteer een keuken</h2>
+        <div id="country-selector">
+            <!-- Country options will be populated here by JavaScript -->
+        </div>
+    </div>
+    <div id="map"></div>
 
-<div id="sidebar">
-    <h3>Selecteer Land</h3>
-    <select id="country-select" onchange="filterByCountry()">
-        <option value="">Selecteer een land</option>
-    </select>
-</div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Functie om de JSON-data op te halen
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                // Data wordt geladen, dus we kunnen verder met het bouwen van de kaart en het filteren
 
-<div id="map"></div>
+                // Restaurants toevoegen aan de kaart
+                var restaurants = data;
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+                // Populate the country selector
+                var countrySelector = document.getElementById('country-selector');
+                var uniqueCountries = [...new Set(restaurants.map(r => r.country))]; // Get unique country names
 
-<script>
-// Laad de restaurants van een lokaal data.json bestand
-let restaurants = [];
+                uniqueCountries.forEach(country => {
+                    var restaurant = restaurants.find(r => r.country === country);
+                    var countryDiv = document.createElement('div');
+                    countryDiv.className = 'country-option';
+                    countryDiv.innerHTML = `<img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>`;
+                    countryDiv.onclick = function() {
+                        filterRestaurantsByCountry(country);
+                    };
+                    countrySelector.appendChild(countryDiv);
+                });
 
-// Haal de data op via een fetch-aanroep naar het lokaal bestand (data.json)
-fetch('data.json')
-    .then(response => response.json())
-    .then(data => {
-        restaurants = data; // Bewaar de data in de restaurants array
-        initializePage(restaurants); // Initialiseer de pagina met de opgehaalde data
-    })
-    .catch(error => console.error('Error loading the data:', error));
+                // Initialize the map
+                var map = L.map('map').setView([52.3676, 4.9041], 10);
 
-function initializePage(restaurants) {
-    // Groeperen van restaurants per land
-    const countries = [...new Set(restaurants.map(restaurant => restaurant.country))].sort();
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
 
-    // Sidebar invullen met landen
-    const selectElement = document.getElementById('country-select');
-    countries.forEach(country => {
-        const option = document.createElement('option');
-        option.value = country;
-        option.textContent = country;
-        selectElement.appendChild(option);
-    });
+                // Marker storage
+                var markers = [];
 
-    // Leaflet map initialiseren
-    const map = L.map('map').setView([52.370216, 4.895168], 6); // Startpunt is Amsterdam, wijzig dit indien nodig
+                // Function to add markers to the map
+                function addMarkers(filteredRestaurants) {
+                    // Remove existing markers
+                    markers.forEach(marker => map.removeLayer(marker));
+                    markers = [];
 
-    // Voeg OpenStreetMap-tile laag toe
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+                    // Add new markers
+                    filteredRestaurants.forEach(function(restaurant) {
+                        var marker = L.marker([restaurant.lat, restaurant.lng])
+                            .addTo(map)
+                            .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
+                        markers.push(marker);
+                    });
+                }
 
-    // Functie om restaurants te filteren op basis van het geselecteerde land
-    function filterByCountry() {
-        const selectedCountry = selectElement.value;
-        const filteredRestaurants = selectedCountry
-            ? restaurants.filter(restaurant => restaurant.country === selectedCountry)
-            : restaurants;
+                // Initial display of all restaurants
+                addMarkers(restaurants);
 
-        updateMap(filteredRestaurants);
-    }
-
-    // Functie om de kaart bij te werken met de gefilterde restaurants
-    function updateMap(filteredRestaurants) {
-        // Verwijder bestaande markers
-        map.eachLayer(layer => {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer);
-            }
-        });
-
-        // Voeg nieuwe markers toe voor gefilterde restaurants
-        filteredRestaurants.forEach(restaurant => {
-            const marker = L.marker([restaurant.lat, restaurant.lng]).addTo(map);
-            marker.bindPopup(`
-                <strong>${restaurant.name}</strong><br>
-                Keuken: ${restaurant.cuisine}<br>
-                Land: ${restaurant.country}<br>
-                <img src="${restaurant.flag}" alt="${restaurant.country} vlag" width="30"><br>
-                <a href="${restaurant.google_maps_link}" target="_blank">Bekijk op Google Maps</a>
-            `);
-        });
-    }
-
-    // Initieel laden van alle restaurants op de kaart
-    updateMap(restaurants);
-}
-
-</script>
-
+                // Filter restaurants by selected country
+                function filterRestaurantsByCountry(country) {
+                    var filteredRestaurants = restaurants.filter(r => r.country === country);
+                    addMarkers(filteredRestaurants);
+                }
+            })
+            .catch(error => console.error('Error loading the JSON data:', error));
+    </script>
 </body>
 </html>
