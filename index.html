@@ -89,11 +89,7 @@
                     filteredRestaurants.forEach(function(restaurant) {
                         var marker = L.marker([restaurant.lat, restaurant.lng])
                             .addTo(map)
-                            .bindPopup(`
-                                <b>${restaurant.name}</b><br>
-                                Keuken: ${restaurant.cuisine}<br>
-                                <a href="${restaurant.google_maps_url}" target="_blank">Bekijk op Google Maps</a>
-                            `);
+                            .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
                         markers.push(marker);
                     });
                 }
