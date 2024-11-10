@@ -7,42 +7,99 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
+            display: flex;
             font-family: Arial, sans-serif;
         }
+        #sidebar {
+            width: 250px;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
         #map {
-            height: 600px; /* Pas de hoogte aan naar wens */
-            width: 100%; /* Volle breedte */
+            height: 600px;
+            flex-grow: 1;
             margin: 20px 0;
+        }
+        .country-option {
+            cursor: pointer;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .country-option img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Kaart van Wereldkeukens in Nederland</h1>
-    <p>Bekijk welke keukens er in jouw buurt te vinden zijn!</p>
+    <div id="sidebar">
+        <h2>Selecteer een keuken</h2>
+        <div id="country-selector">
+            <!-- Country options will be populated here by JavaScript -->
+        </div>
+    </div>
     <div id="map"></div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Initieer de kaart met Amsterdam als startpunt
+        // Data for the restaurants
+        var restaurants = [
+            { name: "Italiaans Restaurant", lat: 52.370216, lng: 4.895168, cuisine: "Italiaans", country: "Italy", flag: "https://flagcdn.com/w20/it.png" },
+            { name: "Thais Restaurant", lat: 52.367984, lng: 4.903561, cuisine: "Thais", country: "Thailand", flag: "https://flagcdn.com/w20/th.png" },
+            { name: "Mexicaans Restaurant", lat: 52.359998, lng: 4.881999, cuisine: "Mexicaans", country: "Mexico", flag: "https://flagcdn.com/w20/mx.png" }
+        ];
+
+        // Populate the country selector
+        var countrySelector = document.getElementById('country-selector');
+        var uniqueCountries = [...new Set(restaurants.map(r => r.country))]; // Get unique country names
+
+        uniqueCountries.forEach(country => {
+            var restaurant = restaurants.find(r => r.country === country);
+            var countryDiv = document.createElement('div');
+            countryDiv.className = 'country-option';
+            countryDiv.innerHTML = `<img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>`;
+            countryDiv.onclick = function() {
+                filterRestaurantsByCountry(country);
+            };
+            countrySelector.appendChild(countryDiv);
+        });
+
+        // Initialize the map
         var map = L.map('map').setView([52.3676, 4.9041], 10);
 
-        // Voeg OpenStreetMap tiles toe
+        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Voeg voorbeeldmarkers toe met pop-ups
-        var restaurants = [
-            { name: "Italiaans Restaurant", lat: 52.370216, lng: 4.895168, cuisine: "Italiaans" },
-            { name: "Thais Restaurant", lat: 52.367984, lng: 4.903561, cuisine: "Thais" },
-            { name: "Mexicaans Restaurant", lat: 52.359998, lng: 4.881999, cuisine: "Mexicaans" }
-        ];
+        // Marker storage
+        var markers = [];
 
-        // Itereer over de restaurants en voeg markers toe
-        restaurants.forEach(function(restaurant) {
-            L.marker([restaurant.lat, restaurant.lng])
-                .addTo(map)
-                .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
-        });
+        // Function to add markers to the map
+        function addMarkers(filteredRestaurants) {
+            // Remove existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Add new markers
+            filteredRestaurants.forEach(function(restaurant) {
+                var marker = L.marker([restaurant.lat, restaurant.lng])
+                    .addTo(map)
+                    .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
+                markers.push(marker);
+            });
+        }
+
+        // Initial display of all restaurants
+        addMarkers(restaurants);
+
+        // Filter restaurants by selected country
+        function filterRestaurantsByCountry(country) {
+            var filteredRestaurants = restaurants.filter(r => r.country === country);
+            addMarkers(filteredRestaurants);
+        }
     </script>
 </body>
 </html>
