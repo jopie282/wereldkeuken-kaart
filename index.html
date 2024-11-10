@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Selector</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         #sidebar {
             width: 200px;
@@ -13,10 +14,16 @@
             left: 0;
             background-color: #f4f4f4;
             padding: 20px;
+            overflow-y: auto;
         }
         #map {
             margin-left: 220px;
             height: 100vh;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -42,7 +49,8 @@ const restaurants = [
         "lng": 4.895168,
         "cuisine": "Italiaans",
         "country": "Italy",
-        "flag": "https://flagcdn.com/w20/it.png"
+        "flag": "https://flagcdn.com/w20/it.png",
+        "google_maps_link": "https://www.google.com/maps?q=52.370216,4.895168"
     },
     {
         "name": "Frans Restaurant",
@@ -50,7 +58,8 @@ const restaurants = [
         "lng": 2.3522,
         "cuisine": "Frans",
         "country": "France",
-        "flag": "https://flagcdn.com/w20/fr.png"
+        "flag": "https://flagcdn.com/w20/fr.png",
+        "google_maps_link": "https://www.google.com/maps?q=48.8566,2.3522"
     },
     {
         "name": "Mexicaans Restaurant",
@@ -58,7 +67,8 @@ const restaurants = [
         "lng": -99.1332,
         "cuisine": "Mexicaans",
         "country": "Mexico",
-        "flag": "https://flagcdn.com/w20/mx.png"
+        "flag": "https://flagcdn.com/w20/mx.png",
+        "google_maps_link": "https://www.google.com/maps?q=19.4326,-99.1332"
     }
 ];
 
@@ -108,7 +118,8 @@ function updateMap(filteredRestaurants) {
             <strong>${restaurant.name}</strong><br>
             Keuken: ${restaurant.cuisine}<br>
             Land: ${restaurant.country}<br>
-            <img src="${restaurant.flag}" alt="${restaurant.country} vlag" width="30">
+            <img src="${restaurant.flag}" alt="${restaurant.country} vlag" width="30"><br>
+            <a href="${restaurant.google_maps_link}" target="_blank">Bekijk op Google Maps</a>
         `);
     });
 }
