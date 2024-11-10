@@ -44,62 +44,66 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Data for the restaurants
-        var restaurants = [
-            { name: "Italiaans Restaurant", lat: 52.370216, lng: 4.895168, cuisine: "Italiaans", country: "Italy", flag: "https://flagcdn.com/w20/it.png" },
-            { name: "Thais Restaurant", lat: 52.367984, lng: 4.903561, cuisine: "Thais", country: "Thailand", flag: "https://flagcdn.com/w20/th.png" },
-            { name: "Mexicaans Restaurant", lat: 52.359998, lng: 4.881999, cuisine: "Mexicaans", country: "Mexico", flag: "https://flagcdn.com/w20/mx.png" }
-        ];
+        // Functie om de JSON-data op te halen
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                // Data wordt geladen, dus we kunnen verder met het bouwen van de kaart en het filteren
 
-        // Populate the country selector
-        var countrySelector = document.getElementById('country-selector');
-        var uniqueCountries = [...new Set(restaurants.map(r => r.country))]; // Get unique country names
+                // Restaurants toevoegen aan de kaart
+                var restaurants = data;
 
-        uniqueCountries.forEach(country => {
-            var restaurant = restaurants.find(r => r.country === country);
-            var countryDiv = document.createElement('div');
-            countryDiv.className = 'country-option';
-            countryDiv.innerHTML = `<img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>`;
-            countryDiv.onclick = function() {
-                filterRestaurantsByCountry(country);
-            };
-            countrySelector.appendChild(countryDiv);
-        });
+                // Populate the country selector
+                var countrySelector = document.getElementById('country-selector');
+                var uniqueCountries = [...new Set(restaurants.map(r => r.country))]; // Get unique country names
 
-        // Initialize the map
-        var map = L.map('map').setView([52.3676, 4.9041], 10);
+                uniqueCountries.forEach(country => {
+                    var restaurant = restaurants.find(r => r.country === country);
+                    var countryDiv = document.createElement('div');
+                    countryDiv.className = 'country-option';
+                    countryDiv.innerHTML = `<img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>`;
+                    countryDiv.onclick = function() {
+                        filterRestaurantsByCountry(country);
+                    };
+                    countrySelector.appendChild(countryDiv);
+                });
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+                // Initialize the map
+                var map = L.map('map').setView([52.3676, 4.9041], 10);
 
-        // Marker storage
-        var markers = [];
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
 
-        // Function to add markers to the map
-        function addMarkers(filteredRestaurants) {
-            // Remove existing markers
-            markers.forEach(marker => map.removeLayer(marker));
-            markers = [];
+                // Marker storage
+                var markers = [];
 
-            // Add new markers
-            filteredRestaurants.forEach(function(restaurant) {
-                var marker = L.marker([restaurant.lat, restaurant.lng])
-                    .addTo(map)
-                    .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
-                markers.push(marker);
-            });
-        }
+                // Function to add markers to the map
+                function addMarkers(filteredRestaurants) {
+                    // Remove existing markers
+                    markers.forEach(marker => map.removeLayer(marker));
+                    markers = [];
 
-        // Initial display of all restaurants
-        addMarkers(restaurants);
+                    // Add new markers
+                    filteredRestaurants.forEach(function(restaurant) {
+                        var marker = L.marker([restaurant.lat, restaurant.lng])
+                            .addTo(map)
+                            .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
+                        markers.push(marker);
+                    });
+                }
 
-        // Filter restaurants by selected country
-        function filterRestaurantsByCountry(country) {
-            var filteredRestaurants = restaurants.filter(r => r.country === country);
-            addMarkers(filteredRestaurants);
-        }
+                // Initial display of all restaurants
+                addMarkers(restaurants);
+
+                // Filter restaurants by selected country
+                function filterRestaurantsByCountry(country) {
+                    var filteredRestaurants = restaurants.filter(r => r.country === country);
+                    addMarkers(filteredRestaurants);
+                }
+            })
+            .catch(error => console.error('Error loading the JSON data:', error));
     </script>
 </body>
 </html>
