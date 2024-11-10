@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wereldkeuken Kaart van Nederland</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 600px; /* Pas de hoogte aan naar wens */
+            width: 100%; /* Volle breedte */
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kaart van Wereldkeukens in Nederland</h1>
+    <p>Bekijk welke keukens er in jouw buurt te vinden zijn!</p>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initieer de kaart met Amsterdam als startpunt
+        var map = L.map('map').setView([52.3676, 4.9041], 10);
+
+        // Voeg OpenStreetMap tiles toe
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Voeg voorbeeldmarkers toe met pop-ups
+        var restaurants = [
+            { name: "Italiaans Restaurant", lat: 52.370216, lng: 4.895168, cuisine: "Italiaans" },
+            { name: "Thais Restaurant", lat: 52.367984, lng: 4.903561, cuisine: "Thais" },
+            { name: "Mexicaans Restaurant", lat: 52.359998, lng: 4.881999, cuisine: "Mexicaans" }
+        ];
+
+        // Itereer over de restaurants en voeg markers toe
+        restaurants.forEach(function(restaurant) {
+            L.marker([restaurant.lat, restaurant.lng])
+                .addTo(map)
+                .bindPopup("<b>" + restaurant.name + "</b><br>Keuken: " + restaurant.cuisine);
+        });
+    </script>
+</body>
+</html>
