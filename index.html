@@ -61,7 +61,7 @@
                     var restaurant = restaurants.find(r => r.country === country);
                     var countryDiv = document.createElement('div');
                     countryDiv.className = 'country-option';
-                    countryDiv.innerHTML = <img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>;
+                    countryDiv.innerHTML = `<img src="${restaurant.flag}" alt="${country} flag"> <span>${country}</span>`;
                     countryDiv.onclick = function() {
                         filterRestaurantsByCountry(country);
                     };
